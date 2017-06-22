@@ -18,8 +18,7 @@ class pullRequestTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //To remove overlap of status bar
-        tableView.contentInset.top = 20
+        self.navigationItem.title = "Pull Requests"
         getPullRequests()
     }
 
@@ -46,7 +45,7 @@ class pullRequestTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "prCell", for: indexPath) as! pullRequestTableViewCell
 
         if prTitleArray.count == 0 {
-            cell.titleLabel.text = "Loading..."
+            cell.titleLabel.text = "Loading Pull Requests..."
             cell.numberLabel.text = ""
             cell.descriptionLabel.text = ""
         } else {
@@ -76,6 +75,9 @@ class pullRequestTableViewController: UITableViewController {
             let controller = (segue.destination as! changedFilesTableViewController)
             let row = (sender as! NSIndexPath).item
             controller.diffUrl = prDiffUrlArray[row]
+            let backItem = UIBarButtonItem()
+            backItem.title = "Back"
+            navigationItem.backBarButtonItem = backItem
         }
     }
     
@@ -134,8 +136,7 @@ class changedFilesTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //To remove overlap of status bar
-        tableView.contentInset.top = 20
+        self.navigationItem.title = "Changed Files"
         getDiff()
     }
     
@@ -162,7 +163,7 @@ class changedFilesTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "fCell", for: indexPath) as! changedFilesTableViewCell
         
         if fileNamesArray.count == 0 {
-            cell.fileLabel.text = "Loading..."
+            cell.fileLabel.text = "Loading Changed Files..."
         } else {
             cell.fileLabel.text = fileNamesArray[indexPath.item]
         }
@@ -198,6 +199,8 @@ class changedFilesTableViewController: UITableViewController {
                 //Break out each line into a seperate outer match
                 let oMatches = outerRegex.matches(in: diffFile!, options: [], range: NSRange(location: 0, length: (diffFile?.characters.count)!))
                 var fileNum = -1
+                var negFile = ""
+                var posFile = ""
 
                 //Check each line for different possible matching indicators
                 for oMatch in oMatches {
@@ -207,8 +210,8 @@ class changedFilesTableViewController: UITableViewController {
                     //Ignore these lines
                     let ignorePattern1 = "^diff --git (.*)$"
                     let ignorePattern2 = "^new file mode (.*)$"
-                    let ignorePattern3 = "^index (.*)..(.*)$"
-                    let ignorePattern4 = "^\\+\\+\\+(.*)$"
+                    let ignorePattern3 = "^deleted file mode (.*)$"
+                    let ignorePattern4 = "^index (.*)..(.*)$"
                     var ignoreRegex = try! NSRegularExpression(pattern: ignorePattern1, options: .caseInsensitive)
                     if ignoreRegex.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)) != nil {
                         //Jump to next oMatch
@@ -231,8 +234,10 @@ class changedFilesTableViewController: UITableViewController {
                     }
                         
                     //File names that have been changed regex
-                    let changedFilesPattern = "^--- a(.*)$"
-                    let changedFilesRegex = try! NSRegularExpression(pattern: changedFilesPattern, options: .caseInsensitive)
+                    let changedFilesPattern1 = "^--- (.*)$"
+                    let changedFilesPattern2 = "^\\+\\+\\+ (.*)$"
+                    let changedFilesRegex1 = try! NSRegularExpression(pattern: changedFilesPattern1, options: .caseInsensitive)
+                    let changedFilesRegex2 = try! NSRegularExpression(pattern: changedFilesPattern2, options: .caseInsensitive)
                     //Line numbers that have changed regex
                     let lineNumberPattern = "^@@ -(.*),(.*) \\+(.*),(.*) @@(.*)$"
                     let lineNumberRegex = try! NSRegularExpression(pattern: lineNumberPattern, options: .caseInsensitive)
@@ -243,28 +248,46 @@ class changedFilesTableViewController: UITableViewController {
                     let posLinePattern = "^\\+(.*)"
                     let posLineRegex = try! NSRegularExpression(pattern: posLinePattern, options: .caseInsensitive)
                     
-                    //Get files names that have been changed
-                    if let iMatch = changedFilesRegex.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)) {
-                        self.fileNamesArray.append(((line as NSString).substring(with: iMatch.rangeAt(1))))
+                    //Get neg file names that have been changed
+                    if let iMatch = changedFilesRegex1.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)) {
+                        negFile = ((line as NSString).substring(with: iMatch.rangeAt(1)))
+                        continue
+                    //Get pos file names that have been changed and compare to neg file name
+                    } else if let iMatch = changedFilesRegex2.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)) {
+                        posFile = ((line as NSString).substring(with: iMatch.rangeAt(1)))
+                        if negFile == "/dev/null" {
+                            posFile.remove(at: posFile.startIndex)
+                            self.fileNamesArray.append(posFile)
+                        } else {
+                            negFile.remove(at: negFile.startIndex)
+                            self.fileNamesArray.append(negFile)
+                        }
                         fileNum += 1
                         self.negLinesDict[fileNum] = []
                         self.posLinesDict[fileNum] = []
                         self.negTextDict[fileNum] = []
                         self.posTextDict[fileNum] = []
-                        continue
                     //Get line numbers for changed text in files
                     } else if let iMatch = lineNumberRegex.firstMatch(in: line, range: NSRange(location: 0, length: line.characters.count)) {
                         var lineNum = (line as NSString).substring(with: iMatch.rangeAt(1))
                         var count = Int((line as NSString).substring(with: iMatch.rangeAt(2)))!
-                        for _ in 1...count {
-                            self.negLinesDict[fileNum]?.append(lineNum)
-                            lineNum =  String(Int(lineNum)! + 1)
+                        if count == 0 {
+                            self.negLinesDict[fileNum]?.append("0")
+                        } else {
+                            for _ in 1...count {
+                                self.negLinesDict[fileNum]?.append(lineNum)
+                                lineNum =  String(Int(lineNum)! + 1)
+                            }
                         }
                         lineNum = (line as NSString).substring(with: iMatch.rangeAt(3))
                         count = Int((line as NSString).substring(with: iMatch.rangeAt(4)))!
-                        for _ in 1...count {
-                            self.posLinesDict[fileNum]?.append(lineNum)
-                            lineNum =  String(Int(lineNum)! + 1)
+                        if count == 0 {
+                            self.posLinesDict[fileNum]?.append("0")
+                        } else {
+                            for _ in 1...count {
+                                self.posLinesDict[fileNum]?.append(lineNum)
+                                lineNum =  String(Int(lineNum)! + 1)
+                            }
                         }
                         continue
                     //If the line has been removed
@@ -285,14 +308,22 @@ class changedFilesTableViewController: UITableViewController {
                 
                 var negStr = String()
                 for n1 in 0...self.negLinesDict.count-1 {
-                    for n2 in 0...self.negLinesDict[n1]!.count-1 {
-                        negStr += self.negLinesDict[n1]![n2] + "     " + self.negTextDict[n1]![n2] + "\n"
+                    if self.negLinesDict[n1]!.count == 0 || self.negLinesDict[n1]?[0] == "0" {
+                        negStr += "0\n"
+                    } else {
+                        for n2 in 0...self.negLinesDict[n1]!.count-1 {
+                            negStr += self.negLinesDict[n1]![n2] + "     " + self.negTextDict[n1]![n2] + "\n"
+                        }
                     }
                 }
                 var posStr = String()
                 for n1 in 0...self.posLinesDict.count-1 {
-                    for n2 in 0...self.posLinesDict[n1]!.count-1 {
-                        posStr += self.posLinesDict[n1]![n2] + "     " + self.posTextDict[n1]![n2] + "\n"
+                    if self.posLinesDict[n1]!.count == 0 || self.posLinesDict[n1]?[0] == "0" {
+                        posStr += "0\n"
+                    } else {
+                        for n2 in 0...self.posLinesDict[n1]!.count-1 {
+                            posStr += self.posLinesDict[n1]![n2] + "     " + self.posTextDict[n1]![n2] + "\n"
+                        }
                     }
                 }
                 
