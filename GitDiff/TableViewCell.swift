@@ -8,7 +8,8 @@
 
 import UIKit
 
-class TableViewCell: UITableViewCell {
+//MARK: - pullRequestTableViewCell
+class pullRequestTableViewCell: UITableViewCell {
     
     //MARK: Properties
     @IBOutlet weak var titleLabel: UILabel!
@@ -26,4 +27,23 @@ class TableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+}
+
+//MARK: - changedFilesTableViewCell
+class changedFilesTableViewCell: UITableViewCell {
+    
+    //MARK: Properties
+    @IBOutlet weak var fileLabel: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        
+        // Configure the view for the selected state
+    }
+    
 }

@@ -11,16 +11,16 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Table View Controller-->
+        <!--Pull Request Table View Controller-->
         <scene sceneID="Ozr-MK-g9C">
             <objects>
-                <tableViewController id="VKl-Tj-0W3" customClass="TableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="VKl-Tj-0W3" customClass="pullRequestTableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="vhR-0k-EfF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="prCell" rowHeight="90" id="tKR-XM-Ay3" customClass="TableViewCell" customModule="GitDiff" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="prCell" rowHeight="90" id="tKR-XM-Ay3" customClass="pullRequestTableViewCell" customModule="GitDiff" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="90"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tKR-XM-Ay3" id="OFj-7V-XVX">
@@ -66,31 +66,60 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="VKl-Tj-0W3" id="6hm-3U-tpe"/>
-                            <outlet property="delegate" destination="VKl-Tj-0W3" id="tBB-5L-eHG"/>
+                            <outlet property="dataSource" destination="VKl-Tj-0W3" id="Tq5-Lr-VxH"/>
+                            <outlet property="delegate" destination="VKl-Tj-0W3" id="38q-hl-otP"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <segue destination="6lw-AV-Gyd" kind="show" identifier="pushRequestToChangedFiles" id="ith-O9-Syv"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kjK-jT-YlZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-663" y="59"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="tne-QT-ifu">
+        <!--Changed Files Table View Controller-->
+        <scene sceneID="cmn-5E-7Lx">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
-                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                <tableViewController id="6lw-AV-Gyd" customClass="changedFilesTableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="QJb-Ux-sey">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="fCell" id="E0j-ec-5TA" customClass="changedFilesTableViewCell" customModule="GitDiff" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="E0j-ec-5TA" id="PSf-Jn-Xux">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="File Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qoW-nw-K6v" userLabel="fileLabel">
+                                            <rect key="frame" x="8" y="15.5" width="56" height="14.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <constraints>
+                                    <constraint firstItem="qoW-nw-K6v" firstAttribute="leading" secondItem="E0j-ec-5TA" secondAttribute="leadingMargin" id="FGW-pQ-HRd"/>
+                                    <constraint firstItem="qoW-nw-K6v" firstAttribute="centerY" secondItem="E0j-ec-5TA" secondAttribute="centerY" id="ymI-S6-6v2"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="fileLabel" destination="qoW-nw-K6v" id="HBV-DZ-RJB"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="6lw-AV-Gyd" id="Ri1-Ou-TSe"/>
+                            <outlet property="delegate" destination="6lw-AV-Gyd" id="gdn-I6-rMZ"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0vP-mL-c0X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="-2" y="59"/>
         </scene>
     </scenes>
 </document>
