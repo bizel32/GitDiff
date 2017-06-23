@@ -348,8 +348,9 @@ class changedFilesTableViewController: UITableViewController {
                 for n2 in 0...self.negLinesDict[n1]!.count-1 {
                     if n1 == fileNum {
                         
-                        self.negStr += self.negLinesDict[n1]![n2] + "     " + self.negTextDict[n1]![n2] + "\n"
+                        self.negStr += self.negLinesDict[n1]![n2] + "     " + self.negTextDict[n1]![n2]
                         if n2 < self.negLinesDict[n1]!.count-1 {
+                            self.negStr += "\n"
                             if (Int(self.negLinesDict[n1]![n2+1])! - Int(self.negLinesDict[n1]![n2])!) > 1 {
                                 self.negStr += "...\n"
                             }
@@ -367,8 +368,9 @@ class changedFilesTableViewController: UITableViewController {
             } else {
                 for n2 in 0...self.posLinesDict[n1]!.count-1 {
                     if n1 == fileNum {
-                        self.posStr += self.posLinesDict[n1]![n2] + "     " + self.posTextDict[n1]![n2] + "\n"
+                        self.posStr += self.posLinesDict[n1]![n2] + "     " + self.posTextDict[n1]![n2]
                         if n2 < self.posLinesDict[n1]!.count-1 {
+                            self.posStr += "\n"
                             if (Int(self.posLinesDict[n1]![n2+1])! - Int(self.posLinesDict[n1]![n2])!) > 1 {
                                 self.posStr += "...\n"
                             }
