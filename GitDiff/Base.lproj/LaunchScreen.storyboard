@@ -1,7 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11106"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,7 +22,35 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BG" translatesAutoresizingMaskIntoConstraints="NO" id="L5P-HH-3oD">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoNoBG" translatesAutoresizingMaskIntoConstraints="NO" id="ty7-2E-R7H">
+                                <rect key="frame" x="47" y="193" width="281" height="281"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="ty7-2E-R7H" secondAttribute="height" multiplier="1:1" id="eSg-rn-02O"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GitDiff" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bgW-Gn-YeJ" userLabel="Git">
+                                <rect key="frame" x="141.5" y="474" width="93" height="54.5"/>
+                                <fontDescription key="fontDescription" name="Futura-CondensedMedium" family="Futura" pointSize="45"/>
+                                <color key="textColor" red="0.95686274509803915" green="0.49411764705882355" blue="0.25882352941176467" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="L5P-HH-3oD" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" id="1t9-JM-I3v"/>
+                            <constraint firstItem="bgW-Gn-YeJ" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" priority="1" id="4Ww-S6-Iu9"/>
+                            <constraint firstItem="ty7-2E-R7H" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="AOj-Rc-cR4"/>
+                            <constraint firstItem="ty7-2E-R7H" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="3:4" id="AUW-7d-1Sh"/>
+                            <constraint firstItem="L5P-HH-3oD" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" id="Lre-o2-aoO"/>
+                            <constraint firstItem="L5P-HH-3oD" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="WON-8H-iWE"/>
+                            <constraint firstItem="ty7-2E-R7H" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="cSf-ws-ju4"/>
+                            <constraint firstItem="bgW-Gn-YeJ" firstAttribute="top" secondItem="ty7-2E-R7H" secondAttribute="bottom" id="tLC-8S-9H5"/>
+                            <constraint firstItem="L5P-HH-3oD" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="zkV-pg-Qqs"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -24,4 +58,8 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="BG" width="1536" height="1536"/>
+        <image name="LogoNoBG" width="1536" height="1536"/>
+    </resources>
 </document>
