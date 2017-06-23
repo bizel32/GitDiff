@@ -62,7 +62,57 @@ class differencesViewController: UIViewController, UITextViewDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+}
 
+class inputViewController: UIViewController, UITextFieldDelegate {
+    
+    @IBOutlet weak var ownerTextField: UITextField!
+    @IBOutlet weak var repoTextField: UITextField!
+    @IBOutlet weak var goButton: UIButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        ownerTextField.delegate = self
+        repoTextField.delegate = self
+        ownerTextField.tag = 1
+        repoTextField.tag = 2
+        goButton.addTarget(self, action: #selector(self.goButtonTapped(_:)), for: .touchDown)
+        self.navigationItem.title = "GitDiff"
+
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField.tag == 1 {
+            textField.resignFirstResponder()
+            repoTextField.becomeFirstResponder()
+        } else if textField.tag == 2 {
+            goButtonTapped(goButton)
+        }
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func goButtonTapped(_ button: UIButton) {
+        self.performSegue(withIdentifier: "inputToPullRequests", sender: goButton)
+    }
+    
+    //Handle segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
+        if (segue.identifier == "inputToPullRequests") {
+            let controller = (segue.destination as! pullRequestTableViewController)
+            controller.owner = ownerTextField.text!
+            controller.repo = repoTextField.text!
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
+        }
+    }
 
 }
 

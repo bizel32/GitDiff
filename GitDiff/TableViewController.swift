@@ -13,8 +13,9 @@ class pullRequestTableViewController: UITableViewController {
     
     var prTitleArray = [String]()
     var prDescriptionArray = [String]()
-    var prNumberArray = [NSNumber]()
     var prDiffUrlArray = [String]()
+    var owner = String()
+    var repo = String()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,11 +47,9 @@ class pullRequestTableViewController: UITableViewController {
 
         if prTitleArray.count == 0 {
             cell.titleLabel.text = "Loading Pull Requests..."
-            cell.numberLabel.text = ""
             cell.descriptionLabel.text = ""
         } else {
             cell.titleLabel.text = prTitleArray[indexPath.item]
-            cell.numberLabel.text = "#" + prNumberArray[indexPath.item].stringValue
             cell.descriptionLabel.text = prDescriptionArray[indexPath.item]
         }
 
@@ -84,9 +83,8 @@ class pullRequestTableViewController: UITableViewController {
     //Get pull request information for MagicalRecord
     func getPullRequests() {
         prTitleArray = []
-        prNumberArray = []
         prDescriptionArray = []
-        let requestURL: NSURL = NSURL(string: "https://api.github.com/repos/magicalpanda/MagicalRecord/pulls")!
+        let requestURL: NSURL = NSURL(string: "https://api.github.com/repos/\(owner)/\(repo)/pulls")!
         let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
         let session = URLSession.shared
         let task = session.dataTask(with: urlRequest as URLRequest) {
@@ -95,7 +93,7 @@ class pullRequestTableViewController: UITableViewController {
             let httpResponse = response as! HTTPURLResponse
             let statusCode = httpResponse.statusCode
             
-            if (statusCode == 200) {
+            if statusCode == 200 {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data!, options: [])
                     if json is [String: Any] {
@@ -105,9 +103,11 @@ class pullRequestTableViewController: UITableViewController {
                         //json is an array
                         for index in 0...jsonData.count-1 {
                             let arrayObject = jsonData[index] as! [String: AnyObject]
-                            self.prTitleArray.append(arrayObject["title"] as! String)
+                            let prNum = arrayObject["number"] as! Int
+                            let prTitle = arrayObject["title"] as! String
+                            let titleStr = String(prNum) + " - " + prTitle
+                            self.prTitleArray.append(titleStr)
                             self.prDescriptionArray.append(arrayObject["body"] as! String)
-                            self.prNumberArray.append(arrayObject["number"] as! NSNumber)
                             self.prDiffUrlArray.append(arrayObject["diff_url"] as! String)
                         }
                         self.refreshTable()
@@ -118,6 +118,12 @@ class pullRequestTableViewController: UITableViewController {
                     print("There is an error with the JSON: \(error)")
                 }
             }
+            
+            if statusCode == 404 {
+                self.prTitleArray.append("Not found.")
+                self.prDescriptionArray.append("Please check the owner and repo are correct.")
+            }
+            self.refreshTable()
         }
         
         task.resume()
