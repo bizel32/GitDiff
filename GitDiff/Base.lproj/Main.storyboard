@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="egZ-Mh-8Uj">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina3_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -16,15 +16,15 @@
             <objects>
                 <tableViewController id="VKl-Tj-0W3" customClass="pullRequestTableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="vhR-0k-EfF">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="prCell" rowHeight="90" id="tKR-XM-Ay3" customClass="pullRequestTableViewCell" customModule="GitDiff" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="90"/>
+                                <rect key="frame" x="0.0" y="28" width="320" height="90"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tKR-XM-Ay3" id="OFj-7V-XVX">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="89.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="89.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YZ0-H1-jL0" userLabel="titleLabel">
@@ -34,13 +34,13 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="any-kX-MQO" userLabel="descriptionLabel">
-                                            <rect key="frame" x="8" y="45" width="359" height="36.5"/>
+                                            <rect key="frame" x="8" y="45" width="304" height="36.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kqR-l8-X09" userLabel="numberLabel">
-                                            <rect key="frame" x="43" y="8" width="324" height="12"/>
+                                            <rect key="frame" x="43" y="8" width="269" height="12"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -84,15 +84,15 @@
             <objects>
                 <tableViewController id="6lw-AV-Gyd" customClass="changedFilesTableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="QJb-Ux-sey">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="fCell" id="E0j-ec-5TA" customClass="changedFilesTableViewCell" customModule="GitDiff" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="E0j-ec-5TA" id="PSf-Jn-Xux">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="File Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qoW-nw-K6v" userLabel="fileLabel">
@@ -117,10 +117,59 @@
                             <outlet property="delegate" destination="6lw-AV-Gyd" id="gdn-I6-rMZ"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <segue destination="1KS-xb-K7I" kind="show" identifier="changedFilesToDifferences" id="ox0-uu-CdL"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0vP-mL-c0X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="936.79999999999995" y="58.920539730134934"/>
+        </scene>
+        <!--Differences View Controller-->
+        <scene sceneID="MWr-cT-4fC">
+            <objects>
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="1KS-xb-K7I" customClass="differencesViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="aSn-jl-p3u"/>
+                        <viewControllerLayoutGuide type="bottom" id="5b6-4g-Xzq"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4lf-aA-feL">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" editable="NO" text="negTextView" translatesAutoresizingMaskIntoConstraints="NO" id="CuU-hu-ATf" userLabel="negTextView">
+                                <rect key="frame" x="0.0" y="64" width="160" height="416"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
+                            </textView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" editable="NO" text="posTextView" translatesAutoresizingMaskIntoConstraints="NO" id="2rV-98-1ec" userLabel="posTextView">
+                                <rect key="frame" x="160" y="64" width="160" height="416"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="2rV-98-1ec" secondAttribute="trailing" id="BdI-Zb-ftp"/>
+                            <constraint firstItem="5b6-4g-Xzq" firstAttribute="top" secondItem="CuU-hu-ATf" secondAttribute="bottom" id="NEL-xh-T5d"/>
+                            <constraint firstItem="5b6-4g-Xzq" firstAttribute="top" secondItem="2rV-98-1ec" secondAttribute="bottom" id="PBW-ln-C35"/>
+                            <constraint firstItem="CuU-hu-ATf" firstAttribute="leading" secondItem="4lf-aA-feL" secondAttribute="leading" id="Rc9-1K-Err"/>
+                            <constraint firstAttribute="centerX" secondItem="CuU-hu-ATf" secondAttribute="trailing" id="YUe-BO-Ns2"/>
+                            <constraint firstItem="2rV-98-1ec" firstAttribute="top" secondItem="aSn-jl-p3u" secondAttribute="bottom" id="a7i-ac-hag"/>
+                            <constraint firstItem="CuU-hu-ATf" firstAttribute="top" secondItem="aSn-jl-p3u" secondAttribute="bottom" id="eCh-wf-fkf"/>
+                            <constraint firstItem="2rV-98-1ec" firstAttribute="leading" secondItem="4lf-aA-feL" secondAttribute="centerX" id="eWy-l8-M6T"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="negTextView" destination="CuU-hu-ATf" id="Ype-vp-dPv"/>
+                        <outlet property="posTextView" destination="2rV-98-1ec" id="rQF-ZM-PjZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SO4-pq-jqp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1621" y="61"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="7Jd-e2-nzs">

@@ -1,4 +1,4 @@
-//
+ //
 //  TableViewController.swift
 //  GitDiff
 //
@@ -76,7 +76,7 @@ class pullRequestTableViewController: UITableViewController {
             let row = (sender as! NSIndexPath).item
             controller.diffUrl = prDiffUrlArray[row]
             let backItem = UIBarButtonItem()
-            backItem.title = "Back"
+            backItem.title = ""
             navigationItem.backBarButtonItem = backItem
         }
     }
@@ -133,6 +133,8 @@ class changedFilesTableViewController: UITableViewController {
     var posLinesDict = Dictionary<Int, Array<String>>()
     var negTextDict = Dictionary<Int, Array<String>>()
     var posTextDict = Dictionary<Int, Array<String>>()
+    var negStr = String()
+    var posStr = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -175,6 +177,26 @@ class changedFilesTableViewController: UITableViewController {
     func refreshTable() {
         DispatchQueue.main.async{
             self.tableView.reloadData()
+        }
+    }
+    
+    //Handle row selection
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "changedFilesToDifferences", sender: indexPath)
+    }
+    
+    //Handle segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
+        if (segue.identifier == "changedFilesToDifferences") {
+            let controller = (segue.destination as! differencesViewController)
+            let fileNum = (sender as! NSIndexPath).item
+            getFileDiffs(fileNum: fileNum)
+            controller.negStr = negStr
+            controller.posStr = posStr
+            controller.navTitle = fileNamesArray[fileNum]
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            navigationItem.backBarButtonItem = backItem
         }
     }
     
@@ -306,34 +328,55 @@ class changedFilesTableViewController: UITableViewController {
                     }
                 }
                 
-                var negStr = String()
-                for n1 in 0...self.negLinesDict.count-1 {
-                    if self.negLinesDict[n1]!.count == 0 || self.negLinesDict[n1]?[0] == "0" {
-                        negStr += "0\n"
-                    } else {
-                        for n2 in 0...self.negLinesDict[n1]!.count-1 {
-                            negStr += self.negLinesDict[n1]![n2] + "     " + self.negTextDict[n1]![n2] + "\n"
-                        }
-                    }
-                }
-                var posStr = String()
-                for n1 in 0...self.posLinesDict.count-1 {
-                    if self.posLinesDict[n1]!.count == 0 || self.posLinesDict[n1]?[0] == "0" {
-                        posStr += "0\n"
-                    } else {
-                        for n2 in 0...self.posLinesDict[n1]!.count-1 {
-                            posStr += self.posLinesDict[n1]![n2] + "     " + self.posTextDict[n1]![n2] + "\n"
-                        }
-                    }
-                }
                 
-                print("negStr: \n\(negStr)")
-                print("posStr: \n\(posStr)")
                 self.refreshTable()
             }
         }
         
         task.resume()
+    }
+    
+    func getFileDiffs(fileNum: Int) {
+        negStr = ""
+        posStr = ""
+        for n1 in 0...self.negLinesDict.count-1 {
+            if self.negLinesDict[n1]!.count == 0 || self.negLinesDict[n1]?[0] == "0" {
+                if n1 == fileNum {
+                        self.negStr += "0     This file was added to the pull request.\n"
+                }
+            } else {
+                for n2 in 0...self.negLinesDict[n1]!.count-1 {
+                    if n1 == fileNum {
+                        
+                        self.negStr += self.negLinesDict[n1]![n2] + "     " + self.negTextDict[n1]![n2] + "\n"
+                        if n2 < self.negLinesDict[n1]!.count-1 {
+                            if (Int(self.negLinesDict[n1]![n2+1])! - Int(self.negLinesDict[n1]![n2])!) > 1 {
+                                self.negStr += "...\n"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for n1 in 0...self.posLinesDict.count-1 {
+            if self.posLinesDict[n1]!.count == 0 || self.posLinesDict[n1]?[0] == "0" {
+                print(posStr)
+                if n1 == fileNum {
+                    self.posStr += "0     This file was removed from the pull request\n"
+                }
+            } else {
+                for n2 in 0...self.posLinesDict[n1]!.count-1 {
+                    if n1 == fileNum {
+                        self.posStr += self.posLinesDict[n1]![n2] + "     " + self.posTextDict[n1]![n2] + "\n"
+                        if n2 < self.posLinesDict[n1]!.count-1 {
+                            if (Int(self.posLinesDict[n1]![n2+1])! - Int(self.posLinesDict[n1]![n2])!) > 1 {
+                                self.posStr += "...\n"
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
