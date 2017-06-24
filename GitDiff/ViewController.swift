@@ -13,9 +13,9 @@ class differencesViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var negTextView: UITextView!
     @IBOutlet weak var posTextView: UITextView!
         
+    var navTitle = String()
     var negStr = String()
     var posStr = String()
-    var navTitle = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +26,6 @@ class differencesViewController: UIViewController, UITextViewDelegate {
         let posArray = posStr.components(separatedBy: CharacterSet.newlines)
         negTextView.text = negStr
         posTextView.text = posStr
-        
         let negAttributedText = NSMutableAttributedString.init(string: negStr)
         let posAttributedText = NSMutableAttributedString.init(string: posStr)
         
@@ -44,7 +43,6 @@ class differencesViewController: UIViewController, UITextViewDelegate {
             }
         }
         posTextView.attributedText = posAttributedText
-        
         self.navigationItem.title = navTitle
         negTextView.layer.borderColor = UIColor.red.cgColor
         negTextView.layer.borderWidth = 1.5;
@@ -106,6 +104,9 @@ class inputViewController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
         if (segue.identifier == "inputToPullRequests") {
             let controller = (segue.destination as! pullRequestTableViewController)
+            controller.prTitleArray = [String]()
+            controller.prDescriptionArray = [String]()
+            controller.prDiffUrlArray = [String]()
             controller.owner = ownerTextField.text!
             controller.repo = repoTextField.text!
             let backItem = UIBarButtonItem()

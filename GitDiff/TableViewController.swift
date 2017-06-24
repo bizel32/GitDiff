@@ -9,7 +9,7 @@
 import UIKit
 
 //MARK: - pullRequestTableViewController
-class pullRequestTableViewController: UITableViewController {
+class pullRequestTableViewController: UITableViewController{
     
     var prTitleArray = [String]()
     var prDescriptionArray = [String]()
@@ -19,7 +19,9 @@ class pullRequestTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tableView.reloadData()
         self.navigationItem.title = "Pull Requests"
+        showLoading(viewCon: self)
         getPullRequests()
     }
 
@@ -46,7 +48,7 @@ class pullRequestTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "prCell", for: indexPath) as! pullRequestTableViewCell
 
         if prTitleArray.count == 0 {
-            cell.titleLabel.text = "Loading Pull Requests..."
+            cell.titleLabel.text = ""
             cell.descriptionLabel.text = ""
         } else {
             cell.titleLabel.text = prTitleArray[indexPath.item]
@@ -61,11 +63,16 @@ class pullRequestTableViewController: UITableViewController {
         DispatchQueue.main.async{
             self.tableView.reloadData()
         }
+        self.dismissLoading()
     }
 
     //Handle row selection
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "pushRequestToChangedFiles", sender: indexPath)
+        if !(prTitleArray[indexPath.item] == "Not found.") {
+            self.performSegue(withIdentifier: "pushRequestToChangedFiles", sender: indexPath)
+        } else {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
     
     //Handle segue
@@ -74,6 +81,13 @@ class pullRequestTableViewController: UITableViewController {
             let controller = (segue.destination as! changedFilesTableViewController)
             let row = (sender as! NSIndexPath).item
             controller.diffUrl = prDiffUrlArray[row]
+            controller.fileNamesArray = [String]()
+            controller.negLinesDict = Dictionary<Int, Array<String>>()
+            controller.posLinesDict = Dictionary<Int, Array<String>>()
+            controller.negTextDict = Dictionary<Int, Array<String>>()
+            controller.posTextDict = Dictionary<Int, Array<String>>()
+            controller.negStr = String()
+            controller.posStr = String()
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
@@ -122,8 +136,8 @@ class pullRequestTableViewController: UITableViewController {
             if statusCode == 404 {
                 self.prTitleArray.append("Not found.")
                 self.prDescriptionArray.append("Please check the owner and repo are correct.")
+                self.refreshTable()
             }
-            self.refreshTable()
         }
         
         task.resume()
@@ -144,7 +158,9 @@ class changedFilesTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tableView.reloadData()
         self.navigationItem.title = "Changed Files"
+        showLoading(viewCon: self)
         getDiff()
     }
     
@@ -171,7 +187,7 @@ class changedFilesTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "fCell", for: indexPath) as! changedFilesTableViewCell
         
         if fileNamesArray.count == 0 {
-            cell.fileLabel.text = "Loading Changed Files..."
+            cell.fileLabel.text = ""
         } else {
             cell.fileLabel.text = fileNamesArray[indexPath.item]
         }
@@ -184,6 +200,7 @@ class changedFilesTableViewController: UITableViewController {
         DispatchQueue.main.async{
             self.tableView.reloadData()
         }
+        self.dismissLoading()
     }
     
     //Handle row selection
@@ -333,8 +350,6 @@ class changedFilesTableViewController: UITableViewController {
                         continue
                     }
                 }
-                
-                
                 self.refreshTable()
             }
         }
@@ -367,7 +382,6 @@ class changedFilesTableViewController: UITableViewController {
         }
         for n1 in 0...self.posLinesDict.count-1 {
             if self.posLinesDict[n1]!.count == 0 || self.posLinesDict[n1]?[0] == "0" {
-                print(posStr)
                 if n1 == fileNum {
                     self.posStr += "0     This file was removed from the pull request\n"
                 }
