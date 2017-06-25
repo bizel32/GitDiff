@@ -14,6 +14,7 @@ class compareTableViewController: UITableViewController{
     var titleArray = [String]()
     var descriptionArray = [String]()
     var diffUrlArray = [String]()
+    var branchUrlArray = [String]()
     var owner = String()
     var repo = String()
     var compType = Int()
@@ -74,7 +75,7 @@ class compareTableViewController: UITableViewController{
                 let rows = tableView.numberOfRows(inSection: indexPath.section)
                 if indexPath.row == rows - 1 {
                     cell.titleLabel.text = "Next page"
-                    cell.descriptionLabel.text = "Go to page \(curPage+1) of \(lastPage)-->"
+                    cell.descriptionLabel.text = "Go to page \(curPage+1) of \(lastPage) \u{02192}"
                 } else {
                     cell.titleLabel.text = titleArray[indexPath.item]
                     cell.descriptionLabel.text = descriptionArray[indexPath.item]
@@ -82,7 +83,7 @@ class compareTableViewController: UITableViewController{
             } else if (curPage != 1 && curPage == lastPage) { //Last page of multiple
                 if indexPath.row == 0 {
                     cell.titleLabel.text = "Previous page"
-                    cell.descriptionLabel.text = "<-- Go to page \(curPage-1) of \(lastPage)"
+                    cell.descriptionLabel.text = "\u{02190} Go to page \(curPage-1) of \(lastPage)"
                 } else {
                     cell.titleLabel.text = titleArray[indexPath.item-1]
                     cell.descriptionLabel.text = descriptionArray[indexPath.item-1]
@@ -91,10 +92,10 @@ class compareTableViewController: UITableViewController{
                 let rows = tableView.numberOfRows(inSection: indexPath.section)
                 if indexPath.row == 0 {
                     cell.titleLabel.text = "Previous page"
-                    cell.descriptionLabel.text = "<-- Go to page \(curPage-1) of \(lastPage)"
+                    cell.descriptionLabel.text = "\u{02190} Go to page \(curPage-1) of \(lastPage)"
                 } else if indexPath.row == rows - 1 {
                     cell.titleLabel.text = "Next page"
-                    cell.descriptionLabel.text = "Go to page \(curPage+1) of \(lastPage) -->"
+                    cell.descriptionLabel.text = "Go to page \(curPage+1) of \(lastPage) \u{002192}"
                 } else {
                     cell.titleLabel.text = titleArray[indexPath.item-1]
                     cell.descriptionLabel.text = descriptionArray[indexPath.item-1]
@@ -123,7 +124,7 @@ class compareTableViewController: UITableViewController{
         } else if cell.titleLabel.text == "Previous page" {
             curPage -= 1
             getComps(page: curPage)
-        } else if cell.titleLabel.text == "Not found." {
+        } else if cell.titleLabel.text == "¯\\_(ツ)_/¯" {
             tableView.deselectRow(at: indexPath, animated: true)
         } else {
             self.performSegue(withIdentifier: "compareToChangedFiles", sender: indexPath)
@@ -221,33 +222,39 @@ class compareTableViewController: UITableViewController{
                             print("JSON is an unexpected dictionary")
                         } else if let jsonData = json as? [Any] {
                             //json is an array
-                            for index in 0...jsonData.count-1 {
-                                let arrayObject = jsonData[index] as! [String: AnyObject]
-                                let prTitle = arrayObject["title"] as! String
-                                let prNum = arrayObject["number"] as! Int
-                                var prDate = arrayObject["created_at"] as! String
-                                //Format date
-                                let dateFormatter = DateFormatter()
-                                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                                dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
-                                let date = dateFormatter.date(from: prDate)
-                                dateFormatter.dateFormat = "yyyy"
-                                dateFormatter.timeZone = NSTimeZone.local
-                                let year = Calendar.current.component(.year, from: date!)
-                                let curYear = Calendar.current.component(.year, from: Date())
-                                if year < curYear {
-                                    dateFormatter.dateFormat = "MMM d, yyyy"
-                                } else {
-                                    dateFormatter.dateFormat = "MMM d"
+                            if jsonData.count == 0 {
+                                self.titleArray.append("¯\\_(ツ)_/¯")
+                                self.descriptionArray.append("There are no pull requests for this repo")
+                                self.diffUrlArray.append("")
+                            } else {
+                                for index in 0...jsonData.count-1 {
+                                    let arrayObject = jsonData[index] as! [String: AnyObject]
+                                    let prTitle = arrayObject["title"] as! String
+                                    let prNum = arrayObject["number"] as! Int
+                                    var prDate = arrayObject["created_at"] as! String
+                                    //Format date
+                                    let dateFormatter = DateFormatter()
+                                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                    dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+                                    let date = dateFormatter.date(from: prDate)
+                                    dateFormatter.dateFormat = "yyyy"
+                                    dateFormatter.timeZone = NSTimeZone.local
+                                    let year = Calendar.current.component(.year, from: date!)
+                                    let curYear = Calendar.current.component(.year, from: Date())
+                                    if year < curYear {
+                                        dateFormatter.dateFormat = "MMM d, yyyy"
+                                    } else {
+                                        dateFormatter.dateFormat = "MMM d"
+                                    }
+                                    prDate = dateFormatter.string(from: date!)
+                                    let prName = arrayObject["user"]?["login"] as! String
+                                    
+                                    let titleStr = prTitle
+                                    let descStr = "#\(prNum) opened on \(prDate) by \(prName)"
+                                    self.titleArray.append(titleStr)
+                                    self.descriptionArray.append(descStr)
+                                    self.diffUrlArray.append(arrayObject["diff_url"] as! String)
                                 }
-                                prDate = dateFormatter.string(from: date!)
-                                let prName = arrayObject["user"]?["login"] as! String
-                                
-                                let titleStr = prTitle
-                                let descStr = "#\(prNum) opened on \(prDate) by \(prName)"
-                                self.titleArray.append(titleStr)
-                                self.descriptionArray.append(descStr)
-                                self.diffUrlArray.append(arrayObject["diff_url"] as! String)
                             }
                             self.refreshTable()
                         } else {
@@ -259,8 +266,8 @@ class compareTableViewController: UITableViewController{
                 }
             
                 if statusCode == 404 {
-                    self.titleArray.append("Not found.")
-                    self.descriptionArray.append("Please check the owner and repo are correct.")
+                    self.titleArray.append("¯\\_(ツ)_/¯")
+                    self.descriptionArray.append("This owner/respository combination was not found")
                     self.refreshTable()
                 }
             }
@@ -289,43 +296,49 @@ class compareTableViewController: UITableViewController{
                             print("JSON is an unexpected dictionary")
                         } else if let jsonData = json as? [Any] {
                             //json is an array
-                            for index in 0...jsonData.count-1 {
-                                let arrayObject = jsonData[index] as! [String: AnyObject]
-                                if self.curPage == 1 && index == 0 {
-                                    self.head = arrayObject["sha"] as! String
+                            if jsonData.count == 0 {
+                                self.titleArray.append("¯\\_(ツ)_/¯")
+                                self.descriptionArray.append("There are no commits for this repo")
+                                self.diffUrlArray.append("")
+                            } else {
+                                for index in 0...jsonData.count-1 {
+                                    let arrayObject = jsonData[index] as! [String: AnyObject]
+                                    if self.curPage == 1 && index == 0 {
+                                        self.head = arrayObject["sha"] as! String
+                                    }
+                                    let cTitle = arrayObject["commit"]?["message"] as! String
+                                    let cCommitter = arrayObject["commit"]?["committer"] as AnyObject
+                                    var cDate = cCommitter["date"] as! String
+                                    var cName = ""
+                                    if let _ = arrayObject["author"] as? NSNull {
+                                        cName = cCommitter["name"] as! String
+                                    } else {
+                                        cName = arrayObject["author"]?["login"] as! String
+                                    }
+                                    let cBase = arrayObject["sha"] as! String
+                                
+                                    //Format date
+                                    let dateFormatter = DateFormatter()
+                                    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                    dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+                                    let date = dateFormatter.date(from: cDate)
+                                    dateFormatter.dateFormat = "yyyy"
+                                    dateFormatter.timeZone = NSTimeZone.local
+                                    let year = Calendar.current.component(.year, from: date!)
+                                    let curYear = Calendar.current.component(.year, from: Date())
+                                    if year < curYear {
+                                        dateFormatter.dateFormat = "MMM d, yyyy"
+                                    } else {
+                                        dateFormatter.dateFormat = "MMM d"
+                                    }
+                                    cDate = dateFormatter.string(from: date!)
+                                
+                                    let titleStr = cTitle
+                                    let descStr = "\(cName) committed on \(cDate)"
+                                    self.titleArray.append(titleStr)
+                                    self.descriptionArray.append(descStr)
+                                    self.diffUrlArray.append(cBase)
                                 }
-                                let cTitle = arrayObject["commit"]?["message"] as! String
-                                let cCommitter = arrayObject["commit"]?["committer"] as AnyObject
-                                var cDate = cCommitter["date"] as! String
-                                var cName = ""
-                                if let _ = arrayObject["author"] as? NSNull {
-                                    cName = cCommitter["name"] as! String
-                                } else {
-                                    cName = arrayObject["author"]?["login"] as! String
-                                }
-                                let cBase = arrayObject["sha"] as! String
-                            
-                                //Format date
-                                let dateFormatter = DateFormatter()
-                                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                                dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
-                                let date = dateFormatter.date(from: cDate)
-                                dateFormatter.dateFormat = "yyyy"
-                                dateFormatter.timeZone = NSTimeZone.local
-                                let year = Calendar.current.component(.year, from: date!)
-                                let curYear = Calendar.current.component(.year, from: Date())
-                                if year < curYear {
-                                    dateFormatter.dateFormat = "MMM d, yyyy"
-                                } else {
-                                    dateFormatter.dateFormat = "MMM d"
-                                }
-                                cDate = dateFormatter.string(from: date!)
-                            
-                                let titleStr = cTitle
-                                let descStr = "\(cName) committed on \(cDate)"
-                                self.titleArray.append(titleStr)
-                                self.descriptionArray.append(descStr)
-                                self.diffUrlArray.append(cBase)
                             }
                             self.refreshTable()
                         } else {
@@ -337,8 +350,8 @@ class compareTableViewController: UITableViewController{
                 }
             
                 if statusCode == 404 {
-                    self.titleArray.append("Not found.")
-                    self.descriptionArray.append("Please check the owner and repo are correct.")
+                    self.titleArray.append("¯\\_(ツ)_/¯")
+                    self.descriptionArray.append("This owner/respository combination was not found")
                     self.refreshTable()
                 }
             }
@@ -367,20 +380,29 @@ class compareTableViewController: UITableViewController{
                             print("JSON is an unexpected dictionary")
                         } else if let jsonData = json as? [Any] {
                             //json is an array
-                            for index in 0...jsonData.count-1 {
-                                let arrayObject = jsonData[index] as! [String: AnyObject]
-                                let bTitle = arrayObject["name"] as! String
-                                if bTitle == "master" {
-                                    self.head = arrayObject["commit"]?["sha"] as! String
+                            if jsonData.count == 0 {
+                                self.titleArray.append("¯\\_(ツ)_/¯")
+                                self.descriptionArray.append("There are no branches for this repo")
+                                self.diffUrlArray.append("")
+                            } else {
+                                for index in 0...jsonData.count-1 {
+                                    let arrayObject = jsonData[index] as! [String: AnyObject]
+                                    let bTitle = arrayObject["name"] as! String
+                                    if bTitle == "master" {
+                                        self.head = arrayObject["commit"]?["sha"] as! String
+                                    }
+                                    let bBase = arrayObject["commit"]?["sha"] as! String
+                                    let bUrl = arrayObject["commit"]?["url"] as! String
+                                    
+                                    let titleStr = bTitle
+                                    let descStr = "sha = \(bBase)"
+                                    self.titleArray.append(titleStr)
+                                    self.descriptionArray.append(descStr)
+                                    self.diffUrlArray.append(bBase)
+                                    self.branchUrlArray.append(bUrl)
                                 }
-                                let bBase = arrayObject["commit"]?["sha"] as! String
-                                
-                                let titleStr = bTitle
-                                let descStr = "sha = \(bBase)"
-                                self.titleArray.append(titleStr)
-                                self.descriptionArray.append(descStr)
-                                self.diffUrlArray.append(bBase)
                             }
+                            self.waiting = false
                             self.refreshTable()
                         } else {
                             print("JSON is invalid")
@@ -391,18 +413,94 @@ class compareTableViewController: UITableViewController{
                 }
                 
                 if statusCode == 404 {
-                    self.titleArray.append("Not found.")
-                    self.descriptionArray.append("Please check the owner and repo are correct.")
+                    self.titleArray.append("¯\\_(ツ)_/¯")
+                    self.descriptionArray.append("This owner/respository combination was not found")
                     self.refreshTable()
                 }
             }
+            waiting = true
             task.resume()
+            while waiting {
+                //Waiting to get branch urls
+            }
+            //getBranchInfo()
         }
-
     }
     
+    func getBranchInfo() {
+        for branch in branchUrlArray {
+            let urlStr = branch
+            let requestURL: NSURL = NSURL(string: urlStr)!
+            let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
+            let session = URLSession.shared
+            let task = session.dataTask(with: urlRequest as URLRequest) {
+                (data, response, error) -> Void in
+                
+                let httpResponse = response as! HTTPURLResponse
+                let statusCode = httpResponse.statusCode
+                
+                if statusCode == 200 {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data!, options: [])
+                        if let jsonData = json as? [String: Any] {
+                            //json is a dictionary
+                            let commit = jsonData["commit"] as! [String: Any]
+                            let committer = commit["committer"] as! [String: Any]
+                            var bDate = committer["date"] as! String
+                            
+                            //Format date
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                            dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+                            let date = dateFormatter.date(from: bDate)
+                            dateFormatter.dateFormat = "yyyy"
+                            dateFormatter.timeZone = NSTimeZone.local
+                            let year = Calendar.current.component(.year, from: date!)
+                            let curYear = Calendar.current.component(.year, from: Date())
+                            if year < curYear {
+                                dateFormatter.dateFormat = "MMM d, yyyy"
+                            } else {
+                                dateFormatter.dateFormat = "MMM d"
+                            }
+                            bDate = dateFormatter.string(from: date!)
+                            var bName = ""
+                            if let _ = jsonData["author"] as? NSNull {
+                                bName = committer["name"] as! String
+                            } else {
+                                let author = jsonData["author"] as! [String: Any]
+                                bName = author["login"] as! String
+                            }
+                            let descStr = "Updated on \(bDate) by \(bName)"
+                            self.descriptionArray.append(descStr)
+                            if branch == self.branchUrlArray[self.branchUrlArray.count-1] {
+                                self.refreshTable()
+                            }
+                        } else if json is [Any] {
+                            //json is an array
+                            print("JSON is an unexpected array")
+                        } else {
+                            print("JSON is invalid")
+                        }
+                    } catch {
+                        print("There is an error with the JSON: \(error)")
+                    }
+                }
+                
+                if statusCode == 404 {
+                    self.titleArray.append("¯\\_(ツ)_/¯")
+                    self.descriptionArray.append("This owner/respository combination was not found")
+                }
+                self.waiting = false
+            }
+            waiting = true
+            task.resume()
+            while waiting {
+                //Waiting for retVal to be set
+            }
+        }
+    }
+ 
     func getDiffUrl(base: String) -> String {
-        var wait = Bool()
         var retVal = String()
         let urlStr = "https://api.github.com/repos/\(owner)/\(repo)/compare/\(base)...\(head)"
         let requestURL: NSURL = NSURL(string: urlStr)!
@@ -420,7 +518,6 @@ class compareTableViewController: UITableViewController{
                     if let jsonData = json as? [String: Any] {
                         //json is a dictionary
                         retVal = jsonData["diff_url"] as! String
-                        wait = false
                     } else if json is [Any] {
                         //json is an array
                         print("JSON is an unexpected array")
@@ -433,14 +530,15 @@ class compareTableViewController: UITableViewController{
             }
             
             if statusCode == 404 {
-                self.titleArray.append("Not found.")
-                self.descriptionArray.append("Please check the owner and repo are correct.")
+                self.titleArray.append("¯\\_(ツ)_/¯")
+                self.descriptionArray.append("This owner/respository combination was not found")
                 self.refreshTable()
             }
+            self.waiting = false
         }
-        wait = true
+        waiting = true
         task.resume()
-        while wait {
+        while waiting {
             //Waiting for retVal to be set
         }
         return retVal
