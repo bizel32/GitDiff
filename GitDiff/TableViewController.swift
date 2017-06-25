@@ -8,21 +8,28 @@
 
 import UIKit
 
-//MARK: - pullRequestTableViewController
-class pullRequestTableViewController: UITableViewController{
+//MARK: - compareTableViewController
+class compareTableViewController: UITableViewController{
     
-    var prTitleArray = [String]()
-    var prDescriptionArray = [String]()
-    var prDiffUrlArray = [String]()
+    var titleArray = [String]()
+    var descriptionArray = [String]()
+    var diffUrlArray = [String]()
     var owner = String()
     var repo = String()
+    var compType = Int()
+    var lastPage = Int()
+    var curPage = Int()
+    var head = String()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.reloadData()
-        self.navigationItem.title = "Pull Requests"
-        showLoading(viewCon: self)
-        getPullRequests()
+        curPage = 1
+        if compType == 0 {
+            self.navigationItem.title = "Pull Requests"
+        } else if compType == 1 {
+            self.navigationItem.title = "Commits"
+        }
+        getLastPage()
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,22 +44,61 @@ class pullRequestTableViewController: UITableViewController{
 
     //Return number of rows to be shown in tableview
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if prTitleArray.count > 0 {
-            return prTitleArray.count
+        if titleArray.count > 0 {
+            if (curPage == 1 && lastPage == 1) { //Only 1 page
+                return titleArray.count
+            } else if (curPage == 1 && curPage < lastPage) { //First page of multiple
+                return titleArray.count + 1
+            } else if (curPage != 1 && curPage == lastPage) { //Last page of multiple
+                return titleArray.count + 1
+            } else if (curPage != 1 && curPage < lastPage) { //Middle page of multiple
+                return titleArray.count + 2
+            }
         }
         return 1
     }
 
     //Update values in each cell to display pull request information
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "prCell", for: indexPath) as! pullRequestTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cCell", for: indexPath) as! compareTableViewCell
 
-        if prTitleArray.count == 0 {
+        if titleArray.count == 0 {
             cell.titleLabel.text = ""
             cell.descriptionLabel.text = ""
         } else {
-            cell.titleLabel.text = prTitleArray[indexPath.item]
-            cell.descriptionLabel.text = prDescriptionArray[indexPath.item]
+            if (curPage == 1 && lastPage == 1) { //Only 1 page
+                cell.titleLabel.text = titleArray[indexPath.item]
+                cell.descriptionLabel.text = descriptionArray[indexPath.item]
+            } else if (curPage == 1 && curPage < lastPage) { //First page of multiple
+                let rows = tableView.numberOfRows(inSection: indexPath.section)
+                if indexPath.row == rows - 1 {
+                    cell.titleLabel.text = "Next page"
+                    cell.descriptionLabel.text = "Go to page \(curPage+1) of \(lastPage)-->"
+                } else {
+                    cell.titleLabel.text = titleArray[indexPath.item]
+                    cell.descriptionLabel.text = descriptionArray[indexPath.item]
+                }
+            } else if (curPage != 1 && curPage == lastPage) { //Last page of multiple
+                if indexPath.row == 0 {
+                    cell.titleLabel.text = "Previous page"
+                    cell.descriptionLabel.text = "<-- Go to page \(curPage-1) of \(lastPage)"
+                } else {
+                    cell.titleLabel.text = titleArray[indexPath.item-1]
+                    cell.descriptionLabel.text = descriptionArray[indexPath.item-1]
+                }
+            } else if (curPage != 1 && curPage < lastPage) { //Middle page of multiple
+                let rows = tableView.numberOfRows(inSection: indexPath.section)
+                if indexPath.row == 0 {
+                    cell.titleLabel.text = "Previous page"
+                    cell.descriptionLabel.text = "<-- Go to page \(curPage-1) of \(lastPage)"
+                } else if indexPath.row == rows - 1 {
+                    cell.titleLabel.text = "Next page"
+                    cell.descriptionLabel.text = "Go to page \(curPage+1) of \(lastPage) -->"
+                } else {
+                    cell.titleLabel.text = titleArray[indexPath.item-1]
+                    cell.descriptionLabel.text = descriptionArray[indexPath.item-1]
+                }
+            }
         }
 
         return cell
@@ -62,25 +108,45 @@ class pullRequestTableViewController: UITableViewController{
     func refreshTable() {
         DispatchQueue.main.async{
             self.tableView.reloadData()
+            self.tableView.contentOffset = CGPoint(x: 0, y: 0 - self.tableView.contentInset.top);
+            //self.tableView.setContentOffset(CGPoint.zero, animated: false)
+
         }
         self.dismissLoading()
+    }
+    
+    func waitToFinish() {
+        DispatchQueue.main.async {
+            self.getComps(page: self.curPage)
+        }
     }
 
     //Handle row selection
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if !(prTitleArray[indexPath.item] == "Not found.") {
-            self.performSegue(withIdentifier: "pushRequestToChangedFiles", sender: indexPath)
-        } else {
+        let cell = tableView.cellForRow(at: indexPath) as! compareTableViewCell
+        if cell.titleLabel.text == "Next page" {
+            curPage += 1
+            getComps(page: curPage)
+        } else if cell.titleLabel.text == "Previous page" {
+            curPage -= 1
+            getComps(page: curPage)
+        } else if cell.titleLabel.text == "Not found." {
             tableView.deselectRow(at: indexPath, animated: true)
+        } else {
+            self.performSegue(withIdentifier: "compareToChangedFiles", sender: indexPath)
         }
     }
     
     //Handle segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
-        if (segue.identifier == "pushRequestToChangedFiles") {
+        if (segue.identifier == "compareToChangedFiles") {
             let controller = (segue.destination as! changedFilesTableViewController)
             let row = (sender as! NSIndexPath).item
-            controller.diffUrl = prDiffUrlArray[row]
+            if compType == 0 {
+                controller.diffUrl = diffUrlArray[row]
+            } else if compType == 1 {
+                controller.diffUrl = getDiffUrl(base: diffUrlArray[row])
+            }
             controller.fileNamesArray = [String]()
             controller.negLinesDict = Dictionary<Int, Array<String>>()
             controller.posLinesDict = Dictionary<Int, Array<String>>()
@@ -94,11 +160,198 @@ class pullRequestTableViewController: UITableViewController{
         }
     }
     
+    func getLastPage() {
+        var urlStr = ""
+        if compType == 0 {
+            urlStr = "https://api.github.com/repos/\(owner)/\(repo)/pulls"
+        } else if compType == 1 {
+            urlStr = "https://api.github.com/repos/\(owner)/\(repo)/commits"
+        }
+        let requestURL: NSURL = NSURL(string: urlStr)!
+        let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
+        let session = URLSession.shared
+        let task = session.dataTask(with: urlRequest as URLRequest) {
+            (data, response, error) -> Void in
+            
+            let pHttpResponse = response as! HTTPURLResponse
+            let pStatusCode = pHttpResponse.statusCode
+            
+            if pStatusCode == 200 {
+                //Get last page so you can loop and get all pages
+                if let link = pHttpResponse.allHeaderFields["Link"] {
+                    let lastPattern = "\\?page=(.*)>;(.*)\\?page=(.*)>; rel=\"last\""
+                    let lastRegex = try! NSRegularExpression(pattern: lastPattern, options: .caseInsensitive)
+                    if let last = lastRegex.firstMatch(in: (link as? String)!, range: NSRange(location: 0, length: ((link as? String)?.characters.count)!)) {
+                        self.lastPage = Int((link as! NSString).substring(with: last.rangeAt(3)))!
+                    } else {
+                        self.lastPage = 1
+                    }
+                } else {
+                    self.lastPage = 1
+                }
+            }
+            self.waitToFinish()
+        }
+        task.resume()
+
+    }
+    
     //Get pull request information for MagicalRecord
-    func getPullRequests() {
-        prTitleArray = []
-        prDescriptionArray = []
-        let requestURL: NSURL = NSURL(string: "https://api.github.com/repos/\(owner)/\(repo)/pulls")!
+    func getComps(page: Int) {
+        showLoading(viewCon: self)
+        if compType == 0 { //Pull Requests
+            titleArray = [String]()
+            descriptionArray = [String]()
+            diffUrlArray = [String]()
+            let urlStr = "https://api.github.com/repos/\(owner)/\(repo)/pulls?page=\(page)"
+            let requestURL: NSURL = NSURL(string: urlStr)!
+            let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
+            let session = URLSession.shared
+            let task = session.dataTask(with: urlRequest as URLRequest) {
+            (data, response, error) -> Void in
+            
+                let httpResponse = response as! HTTPURLResponse
+                let statusCode = httpResponse.statusCode
+            
+                if statusCode == 200 {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data!, options: [])
+                        if json is [String: Any] {
+                            //json is a dictionary
+                            print("JSON is an unexpected dictionary")
+                        } else if let jsonData = json as? [Any] {
+                            //json is an array
+                            for index in 0...jsonData.count-1 {
+                                let arrayObject = jsonData[index] as! [String: AnyObject]
+                                let prTitle = arrayObject["title"] as! String
+                                let prNum = arrayObject["number"] as! Int
+                                var prDate = arrayObject["created_at"] as! String
+                                //Format date
+                                let dateFormatter = DateFormatter()
+                                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+                                let date = dateFormatter.date(from: prDate)
+                                dateFormatter.dateFormat = "yyyy"
+                                dateFormatter.timeZone = NSTimeZone.local
+                                let year = Calendar.current.component(.year, from: date!)
+                                let curYear = Calendar.current.component(.year, from: Date())
+                                if year < curYear {
+                                    dateFormatter.dateFormat = "MMM d, yyyy"
+                                } else {
+                                    dateFormatter.dateFormat = "MMM d"
+                                }
+                                prDate = dateFormatter.string(from: date!)
+                                let prName = arrayObject["user"]?["login"] as! String
+                                
+                                let titleStr = prTitle
+                                let descStr = "#\(prNum) opened on \(prDate) by \(prName)"
+                                self.titleArray.append(titleStr)
+                                self.descriptionArray.append(descStr)
+                                self.diffUrlArray.append(arrayObject["diff_url"] as! String)
+                            }
+                            self.refreshTable()
+                        } else {
+                            print("JSON is invalid")
+                        }
+                    } catch {
+                        print("There is an error with the JSON: \(error)")
+                    }
+                }
+            
+                if statusCode == 404 {
+                    self.titleArray.append("Not found.")
+                    self.descriptionArray.append("Please check the owner and repo are correct.")
+                    self.refreshTable()
+                }
+            }
+            task.resume()
+        }
+        
+        if compType == 1 { //Commits
+            
+            titleArray = [String]()
+            descriptionArray = [String]()
+            diffUrlArray = [String]()
+            let urlStr = "https://api.github.com/repos/\(owner)/\(repo)/commits?page=\(page)"
+            let requestURL: NSURL = NSURL(string: urlStr)!
+            let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
+            let session = URLSession.shared
+            let task = session.dataTask(with: urlRequest as URLRequest) {
+                (data, response, error) -> Void in
+            
+                let httpResponse = response as! HTTPURLResponse
+                let statusCode = httpResponse.statusCode
+            
+                if statusCode == 200 {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data!, options: [])
+                        if json is [String: Any] {
+                            //json is a dictionary
+                            print("JSON is an unexpected dictionary")
+                        } else if let jsonData = json as? [Any] {
+                            //json is an array
+                            for index in 0...jsonData.count-1 {
+                                let arrayObject = jsonData[index] as! [String: AnyObject]
+                                if self.curPage == 1 && index == 0 {
+                                    self.head = arrayObject["sha"] as! String
+                                }
+                                let cTitle = arrayObject["commit"]?["message"] as! String
+                                let cCommitter = arrayObject["commit"]?["committer"] as AnyObject
+                                var cDate = cCommitter["date"] as! String
+                                var cName = ""
+                                if let _ = arrayObject["author"] as? NSNull {
+                                    cName = cCommitter["name"] as! String
+                                } else {
+                                    cName = arrayObject["author"]?["login"] as! String
+                                }
+                                let cBase = arrayObject["sha"] as! String
+                            
+                                //Format date
+                                let dateFormatter = DateFormatter()
+                                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+                                let date = dateFormatter.date(from: cDate)
+                                dateFormatter.dateFormat = "yyyy"
+                                dateFormatter.timeZone = NSTimeZone.local
+                                let year = Calendar.current.component(.year, from: date!)
+                                let curYear = Calendar.current.component(.year, from: Date())
+                                if year < curYear {
+                                    dateFormatter.dateFormat = "MMM d, yyyy"
+                                } else {
+                                    dateFormatter.dateFormat = "MMM d"
+                                }
+                                cDate = dateFormatter.string(from: date!)
+                            
+                                let titleStr = cTitle
+                                let descStr = "\(cName) committed on \(cDate)"
+                                self.titleArray.append(titleStr)
+                                self.descriptionArray.append(descStr)
+                                self.diffUrlArray.append(cBase)
+                            }
+                            self.refreshTable()
+                        } else {
+                            print("JSON is invalid")
+                        }
+                    } catch {
+                        print("There is an error with the JSON: \(error)")
+                    }
+                }
+            
+                if statusCode == 404 {
+                    self.titleArray.append("Not found.")
+                    self.descriptionArray.append("Please check the owner and repo are correct.")
+                    self.refreshTable()
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    func getDiffUrl(base: String) -> String {
+        var wait = Bool()
+        var retVal = String()
+        let urlStr = "https://api.github.com/repos/\(owner)/\(repo)/compare/\(base)...\(head)"
+        let requestURL: NSURL = NSURL(string: urlStr)!
         let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
         let session = URLSession.shared
         let task = session.dataTask(with: urlRequest as URLRequest) {
@@ -110,21 +363,13 @@ class pullRequestTableViewController: UITableViewController{
             if statusCode == 200 {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data!, options: [])
-                    if json is [String: Any] {
+                    if let jsonData = json as? [String: Any] {
                         //json is a dictionary
-                        print("JSON is an unexpected dictionary")
-                    } else if let jsonData = json as? [Any] {
+                        retVal = jsonData["diff_url"] as! String
+                        wait = false
+                    } else if json is [Any] {
                         //json is an array
-                        for index in 0...jsonData.count-1 {
-                            let arrayObject = jsonData[index] as! [String: AnyObject]
-                            let prNum = arrayObject["number"] as! Int
-                            let prTitle = arrayObject["title"] as! String
-                            let titleStr = String(prNum) + " - " + prTitle
-                            self.prTitleArray.append(titleStr)
-                            self.prDescriptionArray.append(arrayObject["body"] as! String)
-                            self.prDiffUrlArray.append(arrayObject["diff_url"] as! String)
-                        }
-                        self.refreshTable()
+                        print("JSON is an unexpected array")
                     } else {
                         print("JSON is invalid")
                     }
@@ -134,15 +379,19 @@ class pullRequestTableViewController: UITableViewController{
             }
             
             if statusCode == 404 {
-                self.prTitleArray.append("Not found.")
-                self.prDescriptionArray.append("Please check the owner and repo are correct.")
+                self.titleArray.append("Not found.")
+                self.descriptionArray.append("Please check the owner and repo are correct.")
                 self.refreshTable()
             }
         }
-        
+        wait = true
         task.resume()
+        while wait {
+            //Waiting for retVal to be set
+        }
+        return retVal
     }
-}
+ }
 
 //MARK: - changedFilesTableViewController
 class changedFilesTableViewController: UITableViewController {
@@ -158,7 +407,6 @@ class changedFilesTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.reloadData()
         self.navigationItem.title = "Changed Files"
         showLoading(viewCon: self)
         getDiff()
@@ -237,6 +485,10 @@ class changedFilesTableViewController: UITableViewController {
             if (statusCode == 200) {
                 //Load .diff file into string
                 let diffFile = String(data: data!, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+                
+                if diffFile?.characters.count == 0 {
+                    self.fileNamesArray.append("All files are identical!")
+                }
                     
                 //Use regex to seperate each line
                 let outerPattern = "^(.*)$"

@@ -8,8 +8,8 @@
 
 import UIKit
 
-//MARK: - pullRequestTableViewCell
-class pullRequestTableViewCell: UITableViewCell {
+//MARK: - compareTableViewCell
+class compareTableViewCell: UITableViewCell {
     
     //MARK: Properties
     @IBOutlet weak var titleLabel: UILabel!

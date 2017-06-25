@@ -67,6 +67,10 @@ class inputViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var ownerTextField: UITextField!
     @IBOutlet weak var repoTextField: UITextField!
     @IBOutlet weak var goButton: UIButton!
+    @IBOutlet weak var ownerLabel: UILabel!
+    @IBOutlet weak var repoLabel: UILabel!
+    @IBOutlet weak var compareSelect: UISegmentedControl!
+    @IBOutlet weak var descriptionLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,12 +81,22 @@ class inputViewController: UIViewController, UITextFieldDelegate {
         repoTextField.tag = 2
         goButton.addTarget(self, action: #selector(self.goButtonTapped(_:)), for: .touchDown)
         self.navigationItem.title = "GitDiff"
-
+        compareSelect.addTarget(self, action: #selector(self.compareChanged(_:)), for: .valueChanged)
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func compareChanged(_ compare: UISegmentedControl) {
+        if compareSelect.selectedSegmentIndex == 0 {
+            descriptionLabel.text = "Get a list of pull requests and be able to compare the changes made!"
+        } else if compareSelect.selectedSegmentIndex == 1 {
+            descriptionLabel.text = "Get a list of commits and compare changes to the most recent commit!"
+        } else if compareSelect.selectedSegmentIndex == 2 {
+            descriptionLabel.text = "Get a list of branches and compare changes to the most recent commit!"
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -96,19 +110,40 @@ class inputViewController: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    //Handle go button/keyboard enter
     func goButtonTapped(_ button: UIButton) {
-        self.performSegue(withIdentifier: "inputToPullRequests", sender: goButton)
+        var cont = true
+        if (ownerTextField.text?.characters.count)! <= 0 {
+            ownerLabel.text = "*Owner - This field is required*"
+            ownerLabel.textColor = UIColor.red
+            cont = false
+        } else {
+            ownerLabel.text = "Owner"
+            ownerLabel.textColor = UIColor.black
+        }
+        if (repoTextField.text?.characters.count)! <= 0 {
+            repoLabel.text = "*Repository - This field is required*"
+            repoLabel.textColor = UIColor.red
+            cont = false
+        } else {
+            repoLabel.text = "Repository"
+            repoLabel.textColor = UIColor.black
+        }
+        if cont {
+            self.performSegue(withIdentifier: "inputToComps", sender: goButton)
+        }
     }
     
     //Handle segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
-        if (segue.identifier == "inputToPullRequests") {
-            let controller = (segue.destination as! pullRequestTableViewController)
-            controller.prTitleArray = [String]()
-            controller.prDescriptionArray = [String]()
-            controller.prDiffUrlArray = [String]()
+        if (segue.identifier == "inputToComps") {
+            let controller = (segue.destination as! compareTableViewController)
+            controller.titleArray = [String]()
+            controller.descriptionArray = [String]()
+            controller.diffUrlArray = [String]()
             controller.owner = ownerTextField.text!
             controller.repo = repoTextField.text!
+            controller.compType = compareSelect.selectedSegmentIndex
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem

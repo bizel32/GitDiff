@@ -29,30 +29,44 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="magicalpanda" borderStyle="roundedRect" placeholder="Enter owner (e.g. magicalpanda)" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="7fV-jh-YR8" userLabel="ownerTextField">
+                                <rect key="frame" x="10" y="88" width="300" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next"/>
+                            </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Repository" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xhq-II-OzP" userLabel="repoLabel">
                                 <rect key="frame" x="10" y="123.5" width="61" height="14.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter the owner and repository name to get a list of pull requests that you can view the differences of." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gk2-04-4h6" userLabel="descLabel">
-                                <rect key="frame" x="10" y="178" width="300" height="14.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="magicalpanda" borderStyle="roundedRect" placeholder="Enter owner (e.g. magicalpanda)" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="7fV-jh-YR8" userLabel="ownerTextField">
-                                <rect key="frame" x="10" y="88.5" width="300" height="30"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next"/>
-                            </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="MagicalRecord" borderStyle="roundedRect" placeholder="Enter repository (e.g. MagicalRecord)" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="tsV-Gs-rhF" userLabel="repoTextField">
                                 <rect key="frame" x="10" y="143" width="300" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go"/>
                             </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Compare" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OnE-ee-hqM" userLabel="compareLabel">
+                                <rect key="frame" x="10" y="178" width="52" height="14"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Pgi-9p-0HQ" userLabel="compareSelect">
+                                <rect key="frame" x="10" y="197" width="300" height="29"/>
+                                <segments>
+                                    <segment title="Pull Requests"/>
+                                    <segment title="Commits"/>
+                                </segments>
+                                <color key="tintColor" red="0.95686274510000002" green="0.4941176471" blue="0.25882352939999997" alpha="1" colorSpace="calibratedRGB"/>
+                            </segmentedControl>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Get a list of pull requests and be able to compare the changes made!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gk2-04-4h6" userLabel="descLabel">
+                                <rect key="frame" x="10" y="230" width="300" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zSX-V1-9YA" userLabel="goButton">
                                 <rect key="frame" x="10" y="448" width="300" height="27"/>
                                 <color key="backgroundColor" red="0.95686274510000002" green="0.4941176471" blue="0.25882352939999997" alpha="1" colorSpace="calibratedRGB"/>
@@ -67,43 +81,52 @@
                             <constraint firstItem="jvn-5p-cs4" firstAttribute="top" secondItem="zSX-V1-9YA" secondAttribute="bottom" constant="5" id="0Yc-Z5-QlZ"/>
                             <constraint firstAttribute="trailing" secondItem="zSX-V1-9YA" secondAttribute="trailing" constant="10" id="2B4-W9-nGn"/>
                             <constraint firstAttribute="trailing" secondItem="7fV-jh-YR8" secondAttribute="trailing" constant="10" id="4aj-nL-Iay"/>
+                            <constraint firstItem="gk2-04-4h6" firstAttribute="top" secondItem="Pgi-9p-0HQ" secondAttribute="bottom" constant="5" id="5Yf-sC-Zx2"/>
                             <constraint firstItem="xhq-II-OzP" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="8iB-kF-99l"/>
+                            <constraint firstItem="OnE-ee-hqM" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="B0m-9n-uwz"/>
                             <constraint firstItem="7fV-jh-YR8" firstAttribute="top" secondItem="wVF-3I-cDa" secondAttribute="bottom" constant="5" id="HSt-4A-E1k"/>
+                            <constraint firstItem="Pgi-9p-0HQ" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="I48-sF-jzz"/>
                             <constraint firstItem="tsV-Gs-rhF" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="K0b-Im-HBb"/>
                             <constraint firstItem="7fV-jh-YR8" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="W1T-IF-FVQ"/>
+                            <constraint firstItem="Pgi-9p-0HQ" firstAttribute="top" secondItem="OnE-ee-hqM" secondAttribute="bottom" constant="5" id="as8-WW-9gj"/>
                             <constraint firstItem="wVF-3I-cDa" firstAttribute="top" secondItem="Cd8-7t-XTE" secondAttribute="bottom" constant="5" id="bBV-9g-wnT"/>
                             <constraint firstAttribute="trailing" secondItem="gk2-04-4h6" secondAttribute="trailing" constant="10" id="bCf-Ja-kBv"/>
                             <constraint firstItem="zSX-V1-9YA" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="eep-Fe-CBC"/>
                             <constraint firstItem="tsV-Gs-rhF" firstAttribute="top" secondItem="xhq-II-OzP" secondAttribute="bottom" constant="5" id="k4a-ex-86F"/>
-                            <constraint firstItem="gk2-04-4h6" firstAttribute="top" secondItem="tsV-Gs-rhF" secondAttribute="bottom" constant="5" id="kWM-ps-hAd"/>
                             <constraint firstItem="xhq-II-OzP" firstAttribute="top" secondItem="7fV-jh-YR8" secondAttribute="bottom" constant="5" id="lGu-zx-Y9Q"/>
+                            <constraint firstItem="OnE-ee-hqM" firstAttribute="top" secondItem="tsV-Gs-rhF" secondAttribute="bottom" constant="5" id="nhV-nw-BKG"/>
                             <constraint firstItem="wVF-3I-cDa" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="rWu-Vf-A0r"/>
                             <constraint firstAttribute="trailing" secondItem="tsV-Gs-rhF" secondAttribute="trailing" constant="10" id="s4O-mv-fCC"/>
+                            <constraint firstAttribute="trailing" secondItem="Pgi-9p-0HQ" secondAttribute="trailing" constant="10" id="tm3-px-oOI"/>
                             <constraint firstItem="gk2-04-4h6" firstAttribute="leading" secondItem="rtL-xe-XJM" secondAttribute="leading" constant="10" id="zEa-jx-RxX"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Y37-NT-LGb"/>
                     <connections>
+                        <outlet property="compareSelect" destination="Pgi-9p-0HQ" id="sDZ-2S-12i"/>
+                        <outlet property="descriptionLabel" destination="gk2-04-4h6" id="HD7-Fx-lhO"/>
                         <outlet property="goButton" destination="zSX-V1-9YA" id="bIS-Eo-idM"/>
+                        <outlet property="ownerLabel" destination="wVF-3I-cDa" id="Epv-Nc-qad"/>
                         <outlet property="ownerTextField" destination="7fV-jh-YR8" id="HBQ-xZ-u3t"/>
+                        <outlet property="repoLabel" destination="xhq-II-OzP" id="H2w-Zy-sGI"/>
                         <outlet property="repoTextField" destination="tsV-Gs-rhF" id="frn-Sr-f24"/>
-                        <segue destination="VKl-Tj-0W3" kind="show" identifier="inputToPullRequests" id="jdb-VB-Fw2"/>
+                        <segue destination="VKl-Tj-0W3" kind="show" identifier="inputToComps" id="jdb-VB-Fw2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="anB-9x-mnx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="592.5" y="58.75"/>
         </scene>
-        <!--Pull Request Table View Controller-->
+        <!--Compare Table View Controller-->
         <scene sceneID="Ozr-MK-g9C">
             <objects>
-                <tableViewController id="VKl-Tj-0W3" customClass="pullRequestTableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="VKl-Tj-0W3" customClass="compareTableViewController" customModule="GitDiff" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="vhR-0k-EfF">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="prCell" rowHeight="100" id="tKR-XM-Ay3" customClass="pullRequestTableViewCell" customModule="GitDiff" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cCell" rowHeight="100" id="tKR-XM-Ay3" customClass="compareTableViewCell" customModule="GitDiff" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="320" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tKR-XM-Ay3" id="OFj-7V-XVX">
@@ -112,7 +135,7 @@
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YZ0-H1-jL0" userLabel="titleLabel">
                                             <rect key="frame" x="10" y="5" width="300" height="14.5"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <fontDescription key="fontDescription" type="system" weight="black" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -145,7 +168,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="MpK-06-Jkg"/>
                     <connections>
-                        <segue destination="6lw-AV-Gyd" kind="show" identifier="pushRequestToChangedFiles" id="ith-O9-Syv"/>
+                        <segue destination="6lw-AV-Gyd" kind="show" identifier="compareToChangedFiles" id="ith-O9-Syv"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kjK-jT-YlZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
