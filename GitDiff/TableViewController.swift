@@ -20,6 +20,7 @@ class compareTableViewController: UITableViewController{
     var lastPage = Int()
     var curPage = Int()
     var head = String()
+    var waiting = Bool()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,16 +110,8 @@ class compareTableViewController: UITableViewController{
         DispatchQueue.main.async{
             self.tableView.reloadData()
             self.tableView.contentOffset = CGPoint(x: 0, y: 0 - self.tableView.contentInset.top);
-            //self.tableView.setContentOffset(CGPoint.zero, animated: false)
-
         }
         self.dismissLoading()
-    }
-    
-    func waitToFinish() {
-        DispatchQueue.main.async {
-            self.getComps(page: self.curPage)
-        }
     }
 
     //Handle row selection
@@ -144,7 +137,7 @@ class compareTableViewController: UITableViewController{
             let row = (sender as! NSIndexPath).item
             if compType == 0 {
                 controller.diffUrl = diffUrlArray[row]
-            } else if compType == 1 {
+            } else if compType == 1 || compType == 2 {
                 controller.diffUrl = getDiffUrl(base: diffUrlArray[row])
             }
             controller.fileNamesArray = [String]()
@@ -166,6 +159,8 @@ class compareTableViewController: UITableViewController{
             urlStr = "https://api.github.com/repos/\(owner)/\(repo)/pulls"
         } else if compType == 1 {
             urlStr = "https://api.github.com/repos/\(owner)/\(repo)/commits"
+        } else if compType == 2 {
+            urlStr = "https://api.github.com/repos/\(owner)/\(repo)/branches"
         }
         let requestURL: NSURL = NSURL(string: urlStr)!
         let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
@@ -190,9 +185,14 @@ class compareTableViewController: UITableViewController{
                     self.lastPage = 1
                 }
             }
-            self.waitToFinish()
+            self.waiting = false
         }
+        waiting = true
         task.resume()
+        while waiting {
+            //Waiting to finish loading
+        }
+        getComps(page: self.curPage)
 
     }
     
@@ -268,7 +268,6 @@ class compareTableViewController: UITableViewController{
         }
         
         if compType == 1 { //Commits
-            
             titleArray = [String]()
             descriptionArray = [String]()
             diffUrlArray = [String]()
@@ -345,6 +344,61 @@ class compareTableViewController: UITableViewController{
             }
             task.resume()
         }
+        
+        if compType == 2 { //Branches
+            titleArray = [String]()
+            descriptionArray = [String]()
+            diffUrlArray = [String]()
+            let urlStr = "https://api.github.com/repos/\(owner)/\(repo)/branches?page=\(page)"
+            let requestURL: NSURL = NSURL(string: urlStr)!
+            let urlRequest: NSMutableURLRequest = NSMutableURLRequest(url: requestURL as URL)
+            let session = URLSession.shared
+            let task = session.dataTask(with: urlRequest as URLRequest) {
+                (data, response, error) -> Void in
+                
+                let httpResponse = response as! HTTPURLResponse
+                let statusCode = httpResponse.statusCode
+                
+                if statusCode == 200 {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data!, options: [])
+                        if json is [String: Any] {
+                            //json is a dictionary
+                            print("JSON is an unexpected dictionary")
+                        } else if let jsonData = json as? [Any] {
+                            //json is an array
+                            for index in 0...jsonData.count-1 {
+                                let arrayObject = jsonData[index] as! [String: AnyObject]
+                                let bTitle = arrayObject["name"] as! String
+                                if bTitle == "master" {
+                                    self.head = arrayObject["commit"]?["sha"] as! String
+                                }
+                                let bBase = arrayObject["commit"]?["sha"] as! String
+                                
+                                let titleStr = bTitle
+                                let descStr = "sha = \(bBase)"
+                                self.titleArray.append(titleStr)
+                                self.descriptionArray.append(descStr)
+                                self.diffUrlArray.append(bBase)
+                            }
+                            self.refreshTable()
+                        } else {
+                            print("JSON is invalid")
+                        }
+                    } catch {
+                        print("There is an error with the JSON: \(error)")
+                    }
+                }
+                
+                if statusCode == 404 {
+                    self.titleArray.append("Not found.")
+                    self.descriptionArray.append("Please check the owner and repo are correct.")
+                    self.refreshTable()
+                }
+            }
+            task.resume()
+        }
+
     }
     
     func getDiffUrl(base: String) -> String {

@@ -58,6 +58,7 @@
                                 <segments>
                                     <segment title="Pull Requests"/>
                                     <segment title="Commits"/>
+                                    <segment title="Branches"/>
                                 </segments>
                                 <color key="tintColor" red="0.95686274510000002" green="0.4941176471" blue="0.25882352939999997" alpha="1" colorSpace="calibratedRGB"/>
                             </segmentedControl>
