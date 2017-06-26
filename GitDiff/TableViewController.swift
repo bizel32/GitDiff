@@ -30,6 +30,8 @@ class compareTableViewController: UITableViewController{
             self.navigationItem.title = "Pull Requests"
         } else if compType == 1 {
             self.navigationItem.title = "Commits"
+        } else if compType == 2 {
+            self.navigationItem.title = "Branches"
         }
         getLastPage()
     }
